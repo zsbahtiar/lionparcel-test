@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +16,8 @@ import (
 	"github.com/zsbahtiar/lionparcel-test/internal/core/repository"
 	"github.com/zsbahtiar/lionparcel-test/internal/handler"
 	"github.com/zsbahtiar/lionparcel-test/internal/pkg/database"
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/logger"
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/middleware"
 )
 
 var serverCmd = &cobra.Command{
@@ -81,8 +84,9 @@ func runServer() {
 	router.HandleFunc("/api/auth/login", authHandler.Login).Methods(http.MethodPost)
 	router.HandleFunc("/api/auth/logout", authHandler.Logout).Methods(http.MethodPost)
 
+	router.Use(middleware.Setup)
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf(":%s", cfg.AppPort),
 		Handler: router,
 	}
 
@@ -90,21 +94,21 @@ func runServer() {
 	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	go func() {
-		log.Println("Server is running on port 8080")
+		logger.Info(fmt.Sprintf("Server is running on port %s", srv.Addr))
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Error starting server: %v", err)
 		}
 	}()
 
 	<-sig
-	log.Println("Server shutdown initiated")
+	logger.Info("Server shutdown initiated")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("Server shutdown failed: %v", err)
+		logger.Fatal(fmt.Sprintf("Server shutdown failed: %v", err))
 	}
 
-	log.Println("Server gracefully stopped")
+	logger.Info("Server gracefully stopped")
 }
