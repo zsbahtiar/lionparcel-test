@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
 	"github.com/zsbahtiar/lionparcel-test/internal/handler"
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/database"
 )
 
 var serverCmd = &cobra.Command{
@@ -25,6 +26,10 @@ var serverCmd = &cobra.Command{
 }
 
 func runServer() {
+
+	db := database.NewPostgres(cfg.Database.User, cfg.Database.Password, cfg.Database.Host, cfg.Database.Port, cfg.Database.Name)
+	defer db.Close()
+
 	router := mux.NewRouter()
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
