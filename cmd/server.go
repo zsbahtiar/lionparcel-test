@@ -37,10 +37,10 @@ func runServer() {
 		w.Write([]byte("OK"))
 	})
 
-	backOfficeRepository := repository.NewBackOfficeRepository(db)
+	movieRepository := repository.NewMovieRepository(db)
 	userRepository := repository.NewUserRepository(db)
 
-	backofficeUsecae := module.NewBackofficeUsecase(backOfficeRepository)
+	backofficeUsecae := module.NewBackofficeUsecase(movieRepository)
 	authUsecae := module.NewAuthUsecase(userRepository, cfg.JWTSecret)
 
 	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae)

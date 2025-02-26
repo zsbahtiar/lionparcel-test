@@ -11,7 +11,7 @@ import (
 )
 
 type backOfficeUsecase struct {
-	backOfficeRepo repository.BackofficeRepository
+	movieRepo repository.MovieRepository
 }
 
 type BackofficeUsecase interface {
@@ -19,8 +19,8 @@ type BackofficeUsecase interface {
 	UpdateMovice(ctx context.Context, req *request.UpdateMovie) (*response.UpdateMovie, error)
 }
 
-func NewBackofficeUsecase(backOfficeRepo repository.BackofficeRepository) BackofficeUsecase {
-	return &backOfficeUsecase{backOfficeRepo: backOfficeRepo}
+func NewBackofficeUsecase(movieRepo repository.MovieRepository) BackofficeUsecase {
+	return &backOfficeUsecase{movieRepo: movieRepo}
 }
 
 func (b *backOfficeUsecase) CreateMovie(ctx context.Context, req *request.CreateMovie) (*response.CreateMovie, error) {
@@ -34,7 +34,7 @@ func (b *backOfficeUsecase) CreateMovie(ctx context.Context, req *request.Create
 		Link:        req.Link,
 	}
 
-	err := b.backOfficeRepo.CreateMovie(ctx, movie)
+	err := b.movieRepo.CreateMovie(ctx, movie)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (b *backOfficeUsecase) UpdateMovice(ctx context.Context, req *request.Updat
 		Link:        req.Link,
 	}
 
-	err := b.backOfficeRepo.UpdateMovie(ctx, movie)
+	err := b.movieRepo.UpdateMovie(ctx, movie)
 	if err != nil {
 		return nil, err
 	}
