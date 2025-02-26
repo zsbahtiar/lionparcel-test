@@ -18,7 +18,7 @@ type MovieRepository interface {
 	CreateMovie(ctx context.Context, movie *entity.Movie) error
 	UpdateMovie(ctx context.Context, movie *entity.Movie) error
 	// @Todo: add more request and response
-	GetMovies(ctx context.Context, req *request.GetMovies) ([]entity.Movie, error)
+	GetMovies(ctx context.Context, req *request.GetMovies) ([]entity.Movie, int64, error)
 }
 
 func NewMovieRepository(db database.Postgres) MovieRepository {
@@ -55,9 +55,9 @@ func (m *movieRepository) UpdateMovie(ctx context.Context, movie *entity.Movie) 
 	return nil
 }
 
-func (m *movieRepository) GetMovies(ctx context.Context, req *request.GetMovies) ([]entity.Movie, error) {
+func (m *movieRepository) GetMovies(ctx context.Context, req *request.GetMovies) ([]entity.Movie, int64, error) {
 	query := `
-SELECT id, title, description, duration, link, genres, artists
+SELECT id, title, description, duration, link, genres, artists, COUNT(*) OVER() AS total_count
 FROM movies
 `
 	var conditions []string
@@ -93,8 +93,22 @@ FROM movies
 		}
 	}
 
+	type movieWithCount struct {
+		entity.Movie
+		TotalCount int64 `db:"total_count"`
+	}
 	var movies []entity.Movie
-	err := m.db.Select(ctx, &movies, m.db.Rebind(query), values...)
-	// @Todo handling custom error
-	return movies, err
+	var totalCount int64 = 0
+	var moviesWithCount []movieWithCount
+	err := m.db.Select(ctx, &moviesWithCount, m.db.Rebind(query), values...)
+	if err != nil {
+		// @Todo handling custom error
+		return nil, 0, err
+	}
+	movies = make([]entity.Movie, len(moviesWithCount))
+	for i, movie := range moviesWithCount {
+		movies[i] = movie.Movie
+		totalCount = movie.TotalCount
+	}
+	return movies, totalCount, nil
 }
