@@ -64,9 +64,7 @@ func runServer() {
 
 	router.HandleFunc("/api/movie", movieHandler.GetMovies).Methods(http.MethodGet)
 
-	router.HandleFunc("/api/movie/{id}/view", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}).Methods(http.MethodPost)
+	router.HandleFunc("/api/movie/{id}/view", movieHandler.GetMovieView).Methods(http.MethodGet)
 
 	router.HandleFunc("/api/movie/{id}/watch-duration", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotImplemented)

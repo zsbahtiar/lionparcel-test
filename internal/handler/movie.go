@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
 )
@@ -15,6 +16,7 @@ type movieHandler struct {
 
 type MovieHandler interface {
 	GetMovies(w http.ResponseWriter, r *http.Request)
+	GetMovieView(w http.ResponseWriter, r *http.Request)
 }
 
 func NewMovieHandler(movieUsecase module.MovieUsecase) MovieHandler {
@@ -50,6 +52,20 @@ func (m *movieHandler) GetMovies(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp, err := m.movieUsecase.GetMovies(r.Context(), req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
+func (m *movieHandler) GetMovieView(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	movieID := vars["id"]
+
+	resp, err := m.movieUsecase.GetMovieView(r.Context(), movieID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

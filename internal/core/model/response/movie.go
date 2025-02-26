@@ -14,3 +14,8 @@ type GetMovies struct {
 	Movies []Movie `json:"movies"`
 	Total  int64   `json:"total"`
 }
+
+type GetViewMovies struct {
+	Movie      Movie `json:"movie"`
+	TotalViews int64 `json:"total_views"`
+}
