@@ -34,7 +34,8 @@ func runServer() {
 	backofficeUsecae := module.NewBackofficeUsecase()
 	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae)
 
-	router.HandleFunc("/api/backoffice/movies", backofficeHandler.CreateMovie).Methods(http.MethodPost)
+	router.HandleFunc("/api/backoffices/movies", backofficeHandler.CreateMovie).Methods(http.MethodPost)
+	router.HandleFunc("/api/backoffices/movies/{id}", backofficeHandler.UpdateMovie).Methods(http.MethodPut)
 
 	srv := &http.Server{
 		Addr:    ":8080",

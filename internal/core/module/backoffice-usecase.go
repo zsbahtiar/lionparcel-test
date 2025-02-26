@@ -12,6 +12,7 @@ type backOfficeUsecase struct {
 
 type BackofficeUsecase interface {
 	CreateMovie(ctx context.Context, req *request.CreateMovie) (*response.CreateMovie, error)
+	UpdateMovice(ctx context.Context, req *request.UpdateMovie) (*response.UpdateMovie, error)
 }
 
 func NewBackofficeUsecase() BackofficeUsecase {
@@ -20,6 +21,12 @@ func NewBackofficeUsecase() BackofficeUsecase {
 
 func (b *backOfficeUsecase) CreateMovie(ctx context.Context, req *request.CreateMovie) (*response.CreateMovie, error) {
 	return &response.CreateMovie{
+		ID: "123",
+	}, nil
+}
+
+func (b *backOfficeUsecase) UpdateMovice(ctx context.Context, req *request.UpdateMovie) (*response.UpdateMovie, error) {
+	return &response.UpdateMovie{
 		ID: "123",
 	}, nil
 }
