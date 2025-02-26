@@ -43,6 +43,39 @@ func runServer() {
 	router.HandleFunc("/api/backoffices/stats/most-viewed-genre", backofficeHandler.GetMostViewedGenre).Methods(http.MethodGet)
 	router.HandleFunc("/api/backoffices/stats/most-voted", backofficeHandler.GetMostVoted).Methods(http.MethodGet)
 
+	/*
+		for user
+	*/
+
+	router.HandleFunc("/api/movie", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/api/movie/{id}/view", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}).Methods(http.MethodPost)
+
+	router.HandleFunc("/api/movie/{id}/watch-duration", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}).Methods(http.MethodPost)
+
+	router.HandleFunc("/api/movie/{id}/vote", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}).Methods(http.MethodPost)
+	router.HandleFunc("/api/movie/{id}/voted-movie", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}).Methods(http.MethodGet)
+
+	router.HandleFunc("/api/auth/register", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/login", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/logout", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}).Methods(http.MethodPost)
+
 	srv := &http.Server{
 		Addr:    ":8080",
 		Handler: router,
