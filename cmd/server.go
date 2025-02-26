@@ -42,9 +42,11 @@ func runServer() {
 
 	backofficeUsecae := module.NewBackofficeUsecase(movieRepository)
 	authUsecae := module.NewAuthUsecase(userRepository, cfg.JWTSecret)
+	movieUsecase := module.NewMovieUsecase(movieRepository)
 
 	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae)
 	authHandler := handler.NewAuthHandler(authUsecae)
+	movieHandler := handler.NewMovieHandler(movieUsecase)
 
 	/*
 		for backoffices
@@ -59,9 +61,7 @@ func runServer() {
 		for user
 	*/
 
-	router.HandleFunc("/api/movie", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}).Methods(http.MethodGet)
+	router.HandleFunc("/api/movie", movieHandler.GetMovies).Methods(http.MethodGet)
 
 	router.HandleFunc("/api/movie/{id}/view", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotImplemented)
