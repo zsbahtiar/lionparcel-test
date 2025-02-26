@@ -16,6 +16,9 @@ type backOfficeHandler struct {
 type BackofficeHandler interface {
 	CreateMovie(w http.ResponseWriter, r *http.Request)
 	UpdateMovie(w http.ResponseWriter, r *http.Request)
+	GetMostViewed(w http.ResponseWriter, r *http.Request)
+	GetMostViewedGenre(w http.ResponseWriter, r *http.Request)
+	GetMostVoted(w http.ResponseWriter, r *http.Request)
 }
 
 func NewBackofficeHandler(backofficeUsecase module.BackofficeUsecase) BackofficeHandler {
@@ -72,4 +75,16 @@ func (b *backOfficeHandler) UpdateMovie(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
+}
+
+func (b *backOfficeHandler) GetMostViewed(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+func (b *backOfficeHandler) GetMostViewedGenre(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+func (b *backOfficeHandler) GetMostVoted(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
 }

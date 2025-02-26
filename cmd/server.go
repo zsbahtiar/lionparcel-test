@@ -34,8 +34,14 @@ func runServer() {
 	backofficeUsecae := module.NewBackofficeUsecase()
 	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae)
 
+	/*
+		for backoffices
+	*/
 	router.HandleFunc("/api/backoffices/movies", backofficeHandler.CreateMovie).Methods(http.MethodPost)
 	router.HandleFunc("/api/backoffices/movies/{id}", backofficeHandler.UpdateMovie).Methods(http.MethodPut)
+	router.HandleFunc("/api/backoffices/stats/most-viewed", backofficeHandler.GetMostViewed).Methods(http.MethodGet)
+	router.HandleFunc("/api/backoffices/stats/most-viewed-genre", backofficeHandler.GetMostViewedGenre).Methods(http.MethodGet)
+	router.HandleFunc("/api/backoffices/stats/most-voted", backofficeHandler.GetMostVoted).Methods(http.MethodGet)
 
 	srv := &http.Server{
 		Addr:    ":8080",
