@@ -19,6 +19,7 @@ type MovieRepository interface {
 	UpdateMovie(ctx context.Context, movie *entity.Movie) error
 	// @Todo: add more request and response
 	GetMovies(ctx context.Context, req *request.GetMovies) ([]entity.Movie, int64, error)
+	GetMovie(ctx context.Context, movieID string) (*entity.Movie, error)
 }
 
 func NewMovieRepository(db database.Postgres) MovieRepository {
@@ -111,4 +112,19 @@ FROM movies
 		totalCount = movie.TotalCount
 	}
 	return movies, totalCount, nil
+}
+
+func (m *movieRepository) GetMovie(ctx context.Context, movieID string) (*entity.Movie, error) {
+	query := `
+SELECT id, title, description, duration, link, genres, artists
+FROM movies
+WHERE id = $1
+`
+	var movie entity.Movie
+	err := m.db.SelectOne(ctx, &movie, query, movieID)
+	if err != nil {
+		// @Todo handling custom error
+		return nil, err
+	}
+	return &movie, nil
 }
