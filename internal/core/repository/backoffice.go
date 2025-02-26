@@ -14,6 +14,8 @@ type backOfficeRepository struct {
 type BackofficeRepository interface {
 	CreateMovie(ctx context.Context, movie *entity.Movie) error
 	UpdateMovie(ctx context.Context, movie *entity.Movie) error
+	// @Todo: add more request and response
+	GetMovies(ctx context.Context) ([]entity.Movie, error)
 }
 
 func NewBackOfficeRepository(db database.Postgres) BackofficeRepository {
@@ -41,4 +43,15 @@ func (b *backOfficeRepository) UpdateMovie(ctx context.Context, movie *entity.Mo
 	_, err := b.db.Exec(ctx, query, movie.Title, movie.Description, movie.Duration, movie.Link, movie.Genres, movie.Artists, movie.ID)
 	// @Todo handling custom error
 	return err
+}
+
+func (b *backOfficeRepository) GetMovies(ctx context.Context) ([]entity.Movie, error) {
+	query := `
+SELECT id, title, description, duration, link, genres, artists
+FROM movies
+`
+	var movies []entity.Movie
+	err := b.db.Select(ctx, &movies, query)
+	// @Todo handling custom error
+	return movies, err
 }
