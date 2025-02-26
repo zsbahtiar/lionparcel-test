@@ -15,6 +15,7 @@ type authHandler struct {
 type AuthHandler interface {
 	RegisterUser(w http.ResponseWriter, r *http.Request)
 	Login(w http.ResponseWriter, r *http.Request)
+	Logout(w http.ResponseWriter, r *http.Request)
 }
 
 func NewAuthHandler(authUsecase module.AuthUsecase) AuthHandler {
@@ -64,4 +65,23 @@ func (a *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
+}
+
+func (a *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("Authorization")
+	if len(token) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Token is required"))
+		return
+	}
+	req := &request.Logout{Token: token}
+
+	err := a.authUsecase.Logout(r.Context(), req)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Logout Success"))
 }

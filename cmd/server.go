@@ -80,9 +80,7 @@ func runServer() {
 
 	router.HandleFunc("/api/auth/register", authHandler.RegisterUser).Methods(http.MethodPost)
 	router.HandleFunc("/api/auth/login", authHandler.Login).Methods(http.MethodPost)
-	router.HandleFunc("/api/auth/logout", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/logout", authHandler.Logout).Methods(http.MethodPost)
 
 	srv := &http.Server{
 		Addr:    ":8080",
