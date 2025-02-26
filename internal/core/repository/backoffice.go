@@ -26,9 +26,9 @@ func NewBackOfficeRepository(db database.Postgres) BackofficeRepository {
 
 func (b *backOfficeRepository) CreateMovie(ctx context.Context, movie *entity.Movie) error {
 	query := `
-	INSERT INTO movies (id, title, description, duration, link, genres, artists)
+	INSERT INTO movies (id, title, description, duration, link, genres, artists) VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
-	_, err := b.db.Exec(ctx, query, movie.Title, movie.Description, movie.Duration, movie.Link, movie.Genres, movie.Artists)
+	_, err := b.db.Exec(ctx, query, movie.ID, movie.Title, movie.Description, movie.Duration, movie.Link, movie.Genres, movie.Artists)
 	// @Todo handling custom error
 	return err
 }
