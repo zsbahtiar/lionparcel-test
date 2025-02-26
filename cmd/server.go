@@ -38,8 +38,13 @@ func runServer() {
 	})
 
 	backOfficeRepository := repository.NewBackOfficeRepository(db)
+	userRepository := repository.NewUserRepository(db)
+
 	backofficeUsecae := module.NewBackofficeUsecase(backOfficeRepository)
+	authUsecae := module.NewAuthUsecase(userRepository)
+
 	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae)
+	authHandler := handler.NewAuthHandler(authUsecae)
 
 	/*
 		for backoffices
@@ -73,9 +78,7 @@ func runServer() {
 		w.WriteHeader(http.StatusNotImplemented)
 	}).Methods(http.MethodGet)
 
-	router.HandleFunc("/api/auth/register", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}).Methods(http.MethodPost)
+	router.HandleFunc("/api/auth/register", authHandler.RegisterUser).Methods(http.MethodPost)
 	router.HandleFunc("/api/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotImplemented)
 	}).Methods(http.MethodPost)
