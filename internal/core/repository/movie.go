@@ -69,11 +69,11 @@ FROM movies
 		searchConditions := []string{
 			"title ILIKE ?",
 			"description ILIKE ?",
-			"array_to_string(artists, ',') ILIKE ?",
-			"array_to_string(genres, ',') ILIKE ?",
+			"EXISTS (SELECT 1 FROM jsonb_array_elements_text(artists) AS a WHERE a ILIKE ?)",
+			"EXISTS (SELECT 1 FROM jsonb_array_elements_text(genres) AS g WHERE g ILIKE ?)",
 		}
 		conditions = append(conditions, "("+strings.Join(searchConditions, " OR ")+")")
-		values = append(values, searchValue)
+		values = append(values, searchValue, searchValue, searchValue, searchValue)
 	}
 
 	if len(conditions) > 0 {
