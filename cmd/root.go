@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/zsbahtiar/lionparcel-test/config"
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/logger"
 )
 
 var cfg *config.Config
@@ -21,6 +22,8 @@ func init() {
 	if err != nil {
 		log.Fatal("Cannot load config:", err)
 	}
+	logger.Init()
+
 	rootCmd.AddCommand(serverCmd)
 	rootCmd.AddCommand(migrateCmd())
 
