@@ -13,6 +13,7 @@ type userRepository struct {
 
 type UserRepository interface {
 	CreateUser(ctx context.Context, user *entity.User) error
+	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
 }
 
 func NewUserRepository(db database.Postgres) UserRepository {
@@ -28,4 +29,19 @@ func (u *userRepository) CreateUser(ctx context.Context, user *entity.User) erro
 	_, err := u.db.Exec(ctx, query, user.ID, user.Username, user.Email, user.PasswordHash, user.IsAdmin)
 	// @Todo handling custom error
 	return err
+}
+
+func (u *userRepository) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+	query := `
+	SELECT id, username, email, password_hash, is_admin
+	FROM users
+	WHERE email = $1 LIMIT 1
+	`
+	user := &entity.User{}
+	err := u.db.SelectOne(ctx, user, query, email)
+	// @Todo handling custom error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

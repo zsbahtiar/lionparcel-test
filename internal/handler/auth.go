@@ -14,6 +14,7 @@ type authHandler struct {
 
 type AuthHandler interface {
 	RegisterUser(w http.ResponseWriter, r *http.Request)
+	Login(w http.ResponseWriter, r *http.Request)
 }
 
 func NewAuthHandler(authUsecase module.AuthUsecase) AuthHandler {
@@ -41,4 +42,26 @@ func (a *authHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("Register Success"))
+}
+
+func (a *authHandler) Login(w http.ResponseWriter, r *http.Request) {
+	req := &request.Login{}
+	defer r.Body.Close()
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid request body"))
+		return
+	}
+
+	resp, err := a.authUsecase.Login(r.Context(), req)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 }
