@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
+	"strings"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5"
@@ -34,6 +36,7 @@ type Postgres interface {
 
 	Select(ctx context.Context, dest any, sql string, args ...any) error
 	SelectOne(ctx context.Context, dest any, sql string, args ...any) error
+	Rebind(query string) string
 }
 
 func NewPostgres(dbUser, dbPassword, dbHost, dbPort, dbName string) Postgres {
@@ -85,4 +88,23 @@ func (p postgres) SelectOne(ctx context.Context, dest any, sql string, args ...a
 		return err
 	}
 	return nil
+}
+
+func (p postgres) Rebind(query string) string {
+	rqb := make([]byte, 0, len(query)+10)
+
+	var i, j int
+
+	for i = strings.Index(query, "?"); i != -1; i = strings.Index(query, "?") {
+		rqb = append(rqb, query[:i]...)
+
+		rqb = append(rqb, '$')
+
+		j++
+		rqb = strconv.AppendInt(rqb, int64(j), 10)
+
+		query = query[i+1:]
+	}
+
+	return string(append(rqb, query...))
 }
