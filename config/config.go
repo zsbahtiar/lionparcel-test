@@ -17,7 +17,8 @@ type Config struct {
 		Name     string `envconfig:"DB_NAME" required:"true"`
 	}
 
-	AppPort string `envconfig:"APP_PORT" required:"true"`
+	AppPort   string `envconfig:"APP_PORT" required:"true"`
+	JWTSecret string `envconfig:"JWT_SECRET" required:"true"`
 }
 
 func LoadConfig() (*Config, error) {

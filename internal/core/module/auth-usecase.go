@@ -12,14 +12,15 @@ import (
 
 type authUsecase struct {
 	userRepository repository.UserRepository
+	jwtSecret      string
 }
 
 type AuthUsecase interface {
 	RegisterUser(ctx context.Context, req *request.Register) error
 }
 
-func NewAuthUsecase(userRepository repository.UserRepository) AuthUsecase {
-	return &authUsecase{userRepository: userRepository}
+func NewAuthUsecase(userRepository repository.UserRepository, jwtSecret string) AuthUsecase {
+	return &authUsecase{userRepository: userRepository, jwtSecret: jwtSecret}
 }
 
 func (a *authUsecase) RegisterUser(ctx context.Context, req *request.Register) error {

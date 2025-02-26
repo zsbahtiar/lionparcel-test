@@ -41,7 +41,7 @@ func runServer() {
 	userRepository := repository.NewUserRepository(db)
 
 	backofficeUsecae := module.NewBackofficeUsecase(backOfficeRepository)
-	authUsecae := module.NewAuthUsecase(userRepository)
+	authUsecae := module.NewAuthUsecase(userRepository, cfg.JWTSecret)
 
 	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae)
 	authHandler := handler.NewAuthHandler(authUsecae)
