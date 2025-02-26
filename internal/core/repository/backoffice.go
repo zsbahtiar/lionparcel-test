@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/entity"
 	"github.com/zsbahtiar/lionparcel-test/internal/pkg/database"
@@ -40,9 +41,16 @@ func (b *backOfficeRepository) UpdateMovie(ctx context.Context, movie *entity.Mo
 	WHERE id = $7
 	`
 
-	_, err := b.db.Exec(ctx, query, movie.Title, movie.Description, movie.Duration, movie.Link, movie.Genres, movie.Artists, movie.ID)
+	res, err := b.db.Exec(ctx, query, movie.Title, movie.Description, movie.Duration, movie.Link, movie.Genres, movie.Artists, movie.ID)
 	// @Todo handling custom error
-	return err
+	if err != nil {
+		return err
+	}
+
+	if res.RowsAffected() < 1 {
+		return fmt.Errorf("movie with id %s not found", movie.ID)
+	}
+	return nil
 }
 
 func (b *backOfficeRepository) GetMovies(ctx context.Context) ([]entity.Movie, error) {

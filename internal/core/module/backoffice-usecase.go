@@ -45,7 +45,22 @@ func (b *backOfficeUsecase) CreateMovie(ctx context.Context, req *request.Create
 }
 
 func (b *backOfficeUsecase) UpdateMovice(ctx context.Context, req *request.UpdateMovie) (*response.UpdateMovie, error) {
+	movie := &entity.Movie{
+		ID:          req.ID,
+		Title:       req.Title,
+		Description: req.Description,
+		Duration:    req.Duration,
+		Artists:     req.Artists,
+		Genres:      req.Genres,
+		Link:        req.Link,
+	}
+
+	err := b.backOfficeRepo.UpdateMovie(ctx, movie)
+	if err != nil {
+		return nil, err
+	}
+
 	return &response.UpdateMovie{
-		ID: "123",
+		ID: movie.ID,
 	}, nil
 }
