@@ -11,6 +11,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
+	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
+	"github.com/zsbahtiar/lionparcel-test/internal/handler"
 )
 
 var serverCmd = &cobra.Command{
@@ -28,6 +30,11 @@ func runServer() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
+
+	backofficeUsecae := module.NewBackofficeUsecase()
+	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae)
+
+	router.HandleFunc("/api/backoffice/movies", backofficeHandler.CreateMovie).Methods(http.MethodPost)
 
 	srv := &http.Server{
 		Addr:    ":8080",
