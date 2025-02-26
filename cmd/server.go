@@ -56,6 +56,7 @@ func runServer() {
 	router.HandleFunc("/api/backoffice/stat/most-viewed", backofficeHandler.GetMostViewed).Methods(http.MethodGet)
 	router.HandleFunc("/api/backoffice/stat/most-viewed-genre", backofficeHandler.GetMostViewedGenre).Methods(http.MethodGet)
 	router.HandleFunc("/api/backoffice/stat/most-voted", backofficeHandler.GetMostVoted).Methods(http.MethodGet)
+	router.HandleFunc("/api/backoffice/movie", movieHandler.GetMovies).Methods(http.MethodGet)
 
 	/*
 		for user
