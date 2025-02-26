@@ -12,8 +12,8 @@ type backOfficeRepository struct {
 }
 
 type BackofficeRepository interface {
-	CreateMovice(ctx context.Context, movie *entity.Movie) error
-	UpdateMovice(ctx context.Context, movie *entity.Movie) error
+	CreateMovie(ctx context.Context, movie *entity.Movie) error
+	UpdateMovie(ctx context.Context, movie *entity.Movie) error
 }
 
 func NewBackOfficeRepository(db database.Postgres) BackofficeRepository {
@@ -22,7 +22,7 @@ func NewBackOfficeRepository(db database.Postgres) BackofficeRepository {
 	}
 }
 
-func (b *backOfficeRepository) CreateMovice(ctx context.Context, movie *entity.Movie) error {
+func (b *backOfficeRepository) CreateMovie(ctx context.Context, movie *entity.Movie) error {
 	query := `
 	INSERT INTO movies (id, title, description, duration, link, genres, artists)
 	`
@@ -31,7 +31,7 @@ func (b *backOfficeRepository) CreateMovice(ctx context.Context, movie *entity.M
 	return err
 }
 
-func (b *backOfficeRepository) UpdateMovice(ctx context.Context, movie *entity.Movie) error {
+func (b *backOfficeRepository) UpdateMovie(ctx context.Context, movie *entity.Movie) error {
 	query := `
 	UPDATE movies
 	SET title = $1, description = $2, duration = $3, link = $4, genres = $5, artists = $6
