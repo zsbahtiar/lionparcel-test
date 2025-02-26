@@ -13,12 +13,12 @@ example:
 	}
 */
 type CreateMovie struct {
-	Title      string   `json:"title" validate:"required"`
-	Descrition string   `json:"description" validate:"required"`
-	Duration   int      `json:"duration" validate:"required | min=1"`
-	Artists    []string `json:"artists" validate:"required | unique"`
-	Genres     []string `json:"genres" validate:"required | unique "`
-	Link       string   `json:"link" validate:"required | url"`
+	Title       string   `json:"title" validate:"required"`
+	Description string   `json:"description" validate:"required"`
+	Duration    int      `json:"duration" validate:"required | min=1"`
+	Artists     []string `json:"artists" validate:"required | unique"`
+	Genres      []string `json:"genres" validate:"required | unique "`
+	Link        string   `json:"link" validate:"required | url"`
 }
 
 /*
@@ -34,11 +34,11 @@ example:
 	}
 */
 type UpdateMovie struct {
-	ID         string   `json:"id" validate:"required"`
-	Title      string   `json:"title" validate:"required"`
-	Descrition string   `json:"description" validate:"required"`
-	Duration   int      `json:"duration" validate:"required | min=1"`
-	Artists    []string `json:"artists" validate:"required | unique"`
-	Genres     []string `json:"genres" validate:"required | unique "`
-	Link       string   `json:"link" validate:"required | url"`
+	ID          string   `json:"id" validate:"required"`
+	Title       string   `json:"title" validate:"required"`
+	Description string   `json:"description" validate:"required"`
+	Duration    int      `json:"duration" validate:"required | min=1"`
+	Artists     []string `json:"artists" validate:"required | unique"`
+	Genres      []string `json:"genres" validate:"required | unique "`
+	Link        string   `json:"link" validate:"required | url"`
 }

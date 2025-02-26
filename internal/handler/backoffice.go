@@ -43,7 +43,7 @@ func (b *backOfficeHandler) CreateMovie(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		// @Todo: change after all integation
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Invalid request body"))
+		w.Write([]byte(err.Error()))
 	}
 
 	w.Header().Set("Content-Type", "application/json")
