@@ -2,10 +2,12 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/response"
 )
 
 type authHandler struct {
@@ -29,20 +31,17 @@ func (a *authHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid request body"))
+		response.WriteError(w, err)
 		return
 	}
 
 	err := a.authUsecase.RegisterUser(r.Context(), req)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		response.WriteError(w, err)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Register Success"))
+	response.WriteSuccess(w, http.StatusCreated, nil)
 }
 
 func (a *authHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -50,38 +49,31 @@ func (a *authHandler) Login(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid request body"))
+		response.WriteError(w, err)
 		return
 	}
 
 	resp, err := a.authUsecase.Login(r.Context(), req)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		response.WriteError(w, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	response.WriteSuccess(w, http.StatusOK, resp)
 }
 
 func (a *authHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("Authorization")
 	if len(token) < 1 {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Token is required"))
+		response.WriteError(w, fmt.Errorf("token is required"))
 		return
 	}
 	req := &request.Logout{Token: token}
 
 	err := a.authUsecase.Logout(r.Context(), req)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		response.WriteError(w, err)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Logout Success"))
+	response.WriteSuccess(w, http.StatusOK, nil)
 }

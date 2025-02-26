@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/response"
 )
 
 type backOfficeHandler struct {
@@ -33,23 +34,17 @@ func (b *backOfficeHandler) CreateMovie(w http.ResponseWriter, r *http.Request) 
 	defer r.Body.Close()
 
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		// @Todo: change after all integation
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid request body"))
+		response.WriteError(w, err)
 		return
 	}
 
 	resp, err := b.backofficeUsecase.CreateMovie(r.Context(), req)
 	if err != nil {
-		// @Todo: change after all integation
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		response.WriteError(w, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(resp)
+	response.WriteSuccess(w, http.StatusCreated, resp)
 }
 
 func (b *backOfficeHandler) UpdateMovie(w http.ResponseWriter, r *http.Request) {
@@ -61,22 +56,16 @@ func (b *backOfficeHandler) UpdateMovie(w http.ResponseWriter, r *http.Request) 
 	defer r.Body.Close()
 
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		// @Todo: change after all integation
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid request body"))
+		response.WriteError(w, err)
 		return
 	}
 
 	resp, err := b.backofficeUsecase.UpdateMovice(r.Context(), req)
 	if err != nil {
-		// @Todo: change after all integation
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		response.WriteError(w, err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	response.WriteSuccess(w, http.StatusOK, resp)
 }
 
 func (b *backOfficeHandler) GetMostViewed(w http.ResponseWriter, r *http.Request) {

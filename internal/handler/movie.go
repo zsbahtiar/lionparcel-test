@@ -1,13 +1,13 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/response"
 )
 
 type movieHandler struct {
@@ -53,12 +53,11 @@ func (m *movieHandler) GetMovies(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := m.movieUsecase.GetMovies(r.Context(), req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		response.WriteError(w, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	response.WriteSuccess(w, http.StatusOK, resp)
 }
 
 func (m *movieHandler) GetMovieView(w http.ResponseWriter, r *http.Request) {
@@ -67,10 +66,9 @@ func (m *movieHandler) GetMovieView(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := m.movieUsecase.GetMovieView(r.Context(), movieID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		response.WriteError(w, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	response.WriteSuccess(w, http.StatusOK, resp)
 }
