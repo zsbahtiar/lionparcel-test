@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
+	"github.com/zsbahtiar/lionparcel-test/internal/core/repository"
 	"github.com/zsbahtiar/lionparcel-test/internal/handler"
 	"github.com/zsbahtiar/lionparcel-test/internal/pkg/database"
 )
@@ -36,7 +37,8 @@ func runServer() {
 		w.Write([]byte("OK"))
 	})
 
-	backofficeUsecae := module.NewBackofficeUsecase()
+	backOfficeRepository := repository.NewBackOfficeRepository(db)
+	backofficeUsecae := module.NewBackofficeUsecase(backOfficeRepository)
 	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae)
 
 	/*
