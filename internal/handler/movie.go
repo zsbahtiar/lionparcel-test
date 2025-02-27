@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/internalerror"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/middleware"
 	"github.com/zsbahtiar/lionparcel-test/internal/pkg/response"
 )
 
@@ -77,11 +79,17 @@ func (m *movieHandler) GetMovieView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *movieHandler) VoteMovie(w http.ResponseWriter, r *http.Request) {
-	// @TODO: get user id from context
+	userID, err := middleware.GetUserID(r.Context())
+	if err != nil {
+		response.WriteError(w, err)
+		return
+	}
 	mux := mux.Vars(r)
 	req := &request.VoteMovie{
 		MovieID: mux["id"],
+		UserID:  userID,
 	}
+	fmt.Println(req.MovieID, req.UserID)
 	defer r.Body.Close()
 
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
@@ -89,7 +97,7 @@ func (m *movieHandler) VoteMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := m.movieUsecase.VoteMovie(r.Context(), req)
+	err = m.movieUsecase.VoteMovie(r.Context(), req)
 	if err != nil {
 		response.WriteError(w, err)
 		return

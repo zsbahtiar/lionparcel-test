@@ -56,3 +56,11 @@ func (m *Middleware) AuthBackoffice(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+func GetUserID(ctx context.Context) (string, error) {
+	userID, ok := ctx.Value(userIDKey).(string)
+	if !ok {
+		return "", internalerror.ErrAuthInvalid
+	}
+	return userID, nil
+}
