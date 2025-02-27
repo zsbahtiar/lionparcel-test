@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/zsbahtiar/lionparcel-test/internal/core/model/internalerror"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
 	"github.com/zsbahtiar/lionparcel-test/internal/pkg/response"
@@ -17,6 +19,7 @@ type movieHandler struct {
 type MovieHandler interface {
 	GetMovies(w http.ResponseWriter, r *http.Request)
 	GetMovieView(w http.ResponseWriter, r *http.Request)
+	VoteMovie(w http.ResponseWriter, r *http.Request)
 }
 
 func NewMovieHandler(movieUsecase module.MovieUsecase) MovieHandler {
@@ -71,4 +74,26 @@ func (m *movieHandler) GetMovieView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.WriteSuccess(w, http.StatusOK, resp)
+}
+
+func (m *movieHandler) VoteMovie(w http.ResponseWriter, r *http.Request) {
+	// @TODO: get user id from context
+	mux := mux.Vars(r)
+	req := &request.VoteMovie{
+		MovieID: mux["id"],
+	}
+	defer r.Body.Close()
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		response.WriteError(w, internalerror.ErrRequestInvalid)
+		return
+	}
+
+	err := m.movieUsecase.VoteMovie(r.Context(), req)
+	if err != nil {
+		response.WriteError(w, err)
+		return
+	}
+
+	response.WriteSuccess(w, http.StatusOK, nil)
 }

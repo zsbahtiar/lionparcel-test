@@ -73,12 +73,7 @@ func runServer() {
 		w.WriteHeader(http.StatusNotImplemented)
 	}).Methods(http.MethodPost)
 
-	router.HandleFunc("/api/movie/{id}/vote", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}).Methods(http.MethodPost)
-	router.HandleFunc("/api/movie/{id}/voted-movie", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}).Methods(http.MethodGet)
+	router.HandleFunc("/api/movie/{id}/vote", movieHandler.VoteMovie).Methods(http.MethodPost)
 
 	router.HandleFunc("/api/auth/register", authHandler.RegisterUser).Methods(http.MethodPost)
 	router.HandleFunc("/api/auth/login", authHandler.Login).Methods(http.MethodPost)

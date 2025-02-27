@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/entity"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/internalerror"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
@@ -24,6 +26,8 @@ type MovieRepository interface {
 	GetMostViewedMovies(ctx context.Context, limit int) ([]entity.MovieViewCount, error)
 	GetMostViewedGenres(ctx context.Context, limit int) ([]entity.GenreViewCount, error)
 	GetMostVotedMovies(ctx context.Context) ([]entity.MovieVotedCount, error)
+	CreateVote(ctx context.Context, vote *entity.Vote) error
+	DeleteVote(ctx context.Context, userID, movieID string) error
 }
 
 func NewMovieRepository(db database.Postgres) MovieRepository {
@@ -218,4 +222,33 @@ func (m *movieRepository) GetMostVotedMovies(ctx context.Context) ([]entity.Movi
 		return nil, err
 	}
 	return movies, nil
+}
+
+func (m *movieRepository) CreateVote(ctx context.Context, vote *entity.Vote) error {
+	query := `
+	INSERT INTO votes (user_id, movie_id) VALUES ($1, $2)
+	`
+	_, err := m.db.Exec(ctx, query, vote.UserID, vote.MovieID)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == "23505" {
+				return internalerror.ErrVoteExist
+			}
+		}
+		return err
+	}
+	return nil
+}
+
+func (m *movieRepository) DeleteVote(ctx context.Context, userID, movieID string) error {
+	query := `
+	DELETE FROM votes
+	WHERE user_id = $1 AND movie_id = $2
+	`
+	_, err := m.db.Exec(ctx, query, userID, movieID)
+	if err != nil {
+		return err
+	}
+	return nil
 }

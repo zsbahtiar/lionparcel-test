@@ -26,3 +26,8 @@ type MovieVotedCount struct {
 	Title      string `db:"title"`
 	VotedCount int    `db:"voted_count"`
 }
+
+type Vote struct {
+	UserID  string `db:"user_id"`
+	MovieID string `db:"movie_id"`
+}

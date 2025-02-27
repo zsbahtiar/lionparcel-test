@@ -17,6 +17,7 @@ type movieUsecase struct {
 type MovieUsecase interface {
 	GetMovies(ctx context.Context, req *request.GetMovies) (*response.GetMovies, error)
 	GetMovieView(ctx context.Context, movieID string) (*response.GetViewMovies, error)
+	VoteMovie(ctx context.Context, req *request.VoteMovie) error
 }
 
 func NewMovieUsecase(movieRepository repository.MovieRepository) MovieUsecase {
@@ -82,4 +83,27 @@ func (m *movieUsecase) GetMovieView(ctx context.Context, movieID string) (*respo
 		},
 		TotalViews: totalView,
 	}, nil
+}
+
+func (m *movieUsecase) VoteMovie(ctx context.Context, req *request.VoteMovie) error {
+
+	if req.Action == "downvote" {
+		err := m.movieRepository.DeleteVote(ctx, req.UserID, req.MovieID)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	vote := &entity.Vote{
+		UserID:  req.UserID,
+		MovieID: req.MovieID,
+	}
+
+	err := m.movieRepository.CreateVote(ctx, vote)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

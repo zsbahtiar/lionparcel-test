@@ -13,4 +13,6 @@ var (
 	ErrUnauth         = response.New(http.StatusUnauthorized, "UNAUTHENTICATION", "unauthentication")
 	ErrRequestInvalid = response.New(http.StatusBadRequest, "REQUEST_INVALID", "request invalid")
 	ErrAuthInvalid    = response.New(http.StatusUnauthorized, "AUTH_INVALID", "authentication invalid")
+	ErrVoteExist      = response.New(http.StatusConflict, "VOTE_EXIST", "vote already exist")
+	ErrVoteNotFound   = response.New(http.StatusNotFound, "VOTE_NOT_FOUND", "vote not found")
 )
