@@ -1,0 +1,424 @@
+{
+	"info": {
+		"_postman_id": "a3fda6db-e7f0-4d18-b10c-9b85e1c90358",
+		"name": "Lion Parcel Test",
+		"description": "API collection for the Movie Festival App backend services",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11608694"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"zsbahtiar\",\n    \"email\": \"zam2saefulbahtiar@gmail.com\",\n    \"password\": \"securepassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user account"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"securepassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Log in and get authentication token"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDA2MjQwNzQsImlhdCI6MTc0MDYyMDQ3NCwidHlwZSI6ImFjY2VzcyIsInVzZXJfaWQiOiI1MzJjYmFlNS00OWFmLTRhNjAtYmZkMi05N2I5MGQ3YjJiNDMifQ.yOQOYEfoSkI_DDMX3j2YM2Era_WNIgIsvR2txc1mYd0"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Log out the currently authenticated user"
+					},
+					"response": []
+				}
+			],
+			"description": "User registration and authentication endpoints"
+		},
+		{
+			"name": "Admin APIs",
+			"item": [
+				{
+					"name": "Create Movie",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Chernobyl\",\n    \"description\": \"In April 1986, the city of Chernobyl in the Soviet Union suffers one of the worst nuclear disasters in the history of mankind. Consequently, many heroes put their lives on the line in the following days, weeks and months.\",\n    \"duration\": 120,\n    \"artists\": [\n        \"Jessie Buckley\",\n        \"Jared Harris\",\n        \"Stellan Skarsgård\"\n    ],\n    \"genres\": [\n        \"Disaster\",\n        \"Docudrama\",\n        \"Epic\",\n        \"Historical Epic\",\n        \"Period Drama\",\n        \"Drama\",\n        \"History\",\n        \"Thriller\"\n    ],\n    \"link\": \"https://www.imdb.com/title/tt7366338/?ref_=hm_tpks_t_5_pd_tp1_pbr_ic\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/backoffice/movie",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"backoffice",
+								"movie"
+							]
+						},
+						"description": "Create and upload a new movie (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Movie",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"The Avengers - EDITED\",\n    \"description\": \"The Avengers is a team of superheroes appearing in American comic books published by Marvel Comics.\",\n    \"duration\": 120,\n    \"artists\": [\n        \"Robert Downey Jr.\",\n        \"Chris Evans\",\n        \"Mark Ruffalo\",\n        \"Chris Hemsworth\",\n        \"Scarlett Johansson\",\n        \"Jeremy Renner\",\n        \"Tom Hiddleston\",\n        \"Clark Gregg\",\n        \"Cobie Smulders\",\n        \"Stellan Skarsgård\",\n        \"Samuel L. Jackson\"\n    ],\n    \"genres\": [\n        \"Action\",\n        \"Adventure\",\n        \"Sci-Fi\"\n    ],\n    \"link\": \"https://www.youtube.com/watch?v=eOrNdBpGMv8\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/backoffice/movie/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"backoffice",
+								"movie",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "13525d36-76a0-460d-9570-4211ad015ef1"
+								}
+							]
+						},
+						"description": "Update an existing movie by ID (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDA2MjI4MzMsImlhdCI6MTc0MDYxOTIzMywidHlwZSI6ImFjY2VzcyIsInVzZXJfaWQiOiI1MzJjYmFlNS00OWFmLTRhNjAtYmZkMi05N2I5MGQ3YjJiNDMifQ.N_ehadQhAqMPjl_ZhSYe88F7rCegZaQP_kK1WJgY-Fw"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/backoffice/movie/stat",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"backoffice",
+								"movie",
+								"stat"
+							]
+						},
+						"description": "Get statistics about the most viewed movies (admin only)"
+					},
+					"response": []
+				}
+			],
+			"description": "API endpoints accessible only by admin users"
+		},
+		{
+			"name": "All Users APIs",
+			"item": [
+				{
+					"name": "List Movies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/movie?page=1&limit=1&search=Stellan",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movie"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "search",
+									"value": "Stellan"
+								}
+							]
+						},
+						"description": "List all movies with pagination"
+					},
+					"response": []
+				},
+				{
+					"name": "View",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/movie/:id/view",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movie",
+								":id",
+								"view"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "13525d36-76a0-460d-9570-4211ad015ef1"
+								}
+							]
+						},
+						"description": "Record a view for a movie"
+					},
+					"response": []
+				}
+			],
+			"description": "API endpoints accessible by all users"
+		},
+		{
+			"name": "Authenticated User APIs",
+			"item": [
+				{
+					"name": "Vote Movie",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDA2MjI4MzMsImlhdCI6MTc0MDYxOTIzMywidHlwZSI6ImFjY2VzcyIsInVzZXJfaWQiOiI1MzJjYmFlNS00OWFmLTRhNjAtYmZkMi05N2I5MGQ3YjJiNDMifQ.N_ehadQhAqMPjl_ZhSYe88F7rCegZaQP_kK1WJgY-Fw"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"upvote\" // upvote or downvote\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/movie/:id/vote",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movie",
+								":id",
+								"vote"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "13525d36-76a0-460d-9570-4211ad015ef1"
+								}
+							]
+						},
+						"description": "Vote for a movie (authenticated users only)"
+					},
+					"response": []
+				},
+				{
+					"name": "List Voted Movies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDA2MjI4MzMsImlhdCI6MTc0MDYxOTIzMywidHlwZSI6ImFjY2VzcyIsInVzZXJfaWQiOiI1MzJjYmFlNS00OWFmLTRhNjAtYmZkMi05N2I5MGQ3YjJiNDMifQ.N_ehadQhAqMPjl_ZhSYe88F7rCegZaQP_kK1WJgY-Fw"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/movie/vote",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movie",
+								"vote"
+							]
+						},
+						"description": "Get a list of all movies voted by the authenticated user"
+					},
+					"response": []
+				},
+				{
+					"name": "Watch",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDA2MjY4OTIsImlhdCI6MTc0MDYyMzI5MiwidHlwZSI6ImFjY2VzcyIsInVzZXJfaWQiOiI4ZTllZDBiMy0zNTNhLTQ1MjItYmVmYS05OWZhOTM1OTE4ZjIifQ.qFf38KXXnvHdTXpu5rbIEqH6BVEkSfSXVl8lGOOPHtE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"duration_watched\": 73.5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/movies/1/watch-duration",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"movies",
+								"1",
+								"watch-duration"
+							]
+						},
+						"description": "Record the duration a user watched a movie (in minutes)"
+					},
+					"response": []
+				}
+			],
+			"description": "API endpoints accessible by authenticated users"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-save token from login response",
+					"if (pm.response.code === 200 && pm.request.url.toString().includes('/api/auth/login')) {",
+					"    var jsonData = pm.response.json();",
+					"    if (jsonData.token) {",
+					"        pm.environment.set('token', jsonData.token);",
+					"        console.log('Token saved to environment variables');",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
