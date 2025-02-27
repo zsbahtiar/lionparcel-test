@@ -18,6 +18,7 @@ type userRepository struct {
 type UserRepository interface {
 	CreateUser(ctx context.Context, user *entity.User) error
 	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
+	GetUser(ctx context.Context, userID string) (*entity.User, error)
 }
 
 func NewUserRepository(db database.Postgres) UserRepository {
@@ -51,6 +52,23 @@ func (u *userRepository) GetUserByEmail(ctx context.Context, email string) (*ent
 	`
 	user := &entity.User{}
 	err := u.db.SelectOne(ctx, user, query, email)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, internalerror.ErrUserNotFound
+		}
+		return nil, err
+	}
+	return user, nil
+}
+
+func (u *userRepository) GetUser(ctx context.Context, userID string) (*entity.User, error) {
+	query := `
+	SELECT id, username, email, is_admin
+	FROM users
+	WHERE id = $1 LIMIT 1
+	`
+	user := &entity.User{}
+	err := u.db.SelectOne(ctx, user, query, userID)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, internalerror.ErrUserNotFound

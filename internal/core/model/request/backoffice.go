@@ -15,10 +15,10 @@ example:
 type CreateMovie struct {
 	Title       string   `json:"title" validate:"required"`
 	Description string   `json:"description" validate:"required"`
-	Duration    int      `json:"duration" validate:"required | min=1"`
-	Artists     []string `json:"artists" validate:"required | unique"`
-	Genres      []string `json:"genres" validate:"required | unique "`
-	Link        string   `json:"link" validate:"required | url"`
+	Duration    int      `json:"duration" validate:"required|min=1"`
+	Artists     []string `json:"artists" validate:"required"`
+	Genres      []string `json:"genres" validate:"required"`
+	Link        string   `json:"link" validate:"required|url"`
 }
 
 /*

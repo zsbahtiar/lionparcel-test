@@ -53,13 +53,17 @@ func runServer() {
 	authHandler := handler.NewAuthHandler(authUsecae, validation)
 	movieHandler := handler.NewMovieHandler(movieUsecase)
 
+	mddlw := middleware.New(authUsecae)
+
 	/*
 		for backoffices
 	*/
-	router.HandleFunc("/api/backoffice/movie", backofficeHandler.CreateMovie).Methods(http.MethodPost)
-	router.HandleFunc("/api/backoffice/movie/{id}", backofficeHandler.UpdateMovie).Methods(http.MethodPut)
-	router.HandleFunc("/api/backoffice/movie/stat", backofficeHandler.GetStats).Methods(http.MethodGet)
-	router.HandleFunc("/api/backoffice/movie", movieHandler.GetMovies).Methods(http.MethodGet)
+	backofficeRouter := router.PathPrefix("/api/backoffice").Subrouter()
+	backofficeRouter.Use(mddlw.AuthBackoffice)
+	backofficeRouter.HandleFunc("/movie", backofficeHandler.CreateMovie).Methods(http.MethodPost)
+	backofficeRouter.HandleFunc("/movie/{id}", backofficeHandler.UpdateMovie).Methods(http.MethodPut)
+	backofficeRouter.HandleFunc("/movie/stat", backofficeHandler.GetStats).Methods(http.MethodGet)
+	backofficeRouter.HandleFunc("/movie", movieHandler.GetMovies).Methods(http.MethodGet)
 
 	/*
 		for user
@@ -69,17 +73,18 @@ func runServer() {
 
 	router.HandleFunc("/api/movie/{id}/view", movieHandler.GetMovieView).Methods(http.MethodGet)
 
-	router.HandleFunc("/api/movie/{id}/watch-duration", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}).Methods(http.MethodPost)
-
-	router.HandleFunc("/api/movie/{id}/vote", movieHandler.VoteMovie).Methods(http.MethodPost)
-
 	router.HandleFunc("/api/auth/register", authHandler.RegisterUser).Methods(http.MethodPost)
 	router.HandleFunc("/api/auth/login", authHandler.Login).Methods(http.MethodPost)
 	router.HandleFunc("/api/auth/logout", authHandler.Logout).Methods(http.MethodPost)
 
-	router.Use(middleware.Setup)
+	userRouter := router.PathPrefix("/api/movie").Subrouter()
+	userRouter.Use(mddlw.AuthUser)
+	userRouter.HandleFunc("/{id}/watch-duration", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}).Methods(http.MethodPost)
+	userRouter.HandleFunc("/{id}/vote", movieHandler.VoteMovie).Methods(http.MethodPost)
+
+	router.Use(mddlw.Do)
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.AppPort),
 		Handler: router,

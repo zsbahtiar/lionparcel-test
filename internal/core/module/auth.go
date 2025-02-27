@@ -29,6 +29,7 @@ type AuthUsecase interface {
 	RegisterUser(ctx context.Context, req *request.Register) error
 	Login(ctx context.Context, req *request.Login) (*response.Login, error)
 	Logout(ctx context.Context, req *request.Logout) error
+	ValidateToken(ctx context.Context, token string) (*entity.User, error)
 }
 
 func NewAuthUsecase(userRepository repository.UserRepository, jwtSecret string) AuthUsecase {
@@ -144,4 +145,41 @@ func (a *authUsecase) cleanupBlacklist() {
 			delete(a.tokenBlacklist, token)
 		}
 	}
+}
+
+func (a *authUsecase) ValidateToken(ctx context.Context, token string) (*entity.User, error) {
+	tokenString := strings.TrimPrefix(token, "Bearer ")
+
+	a.tokenBlacklistLock.RLock()
+	defer a.tokenBlacklistLock.RUnlock()
+
+	if _, ok := a.tokenBlacklist[tokenString]; ok {
+		return nil, internalerror.ErrAuthInvalid
+	}
+
+	claim, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(a.jwtSecret), nil
+	})
+	if err != nil {
+		logger.Error(fmt.Sprintf("error parse token: %v", err))
+		return nil, internalerror.ErrAuthInvalid
+	}
+
+	claims, ok := claim.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, internalerror.ErrAuthInvalid
+	}
+
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		return nil, internalerror.ErrAuthInvalid
+	}
+
+	user, err := a.userRepository.GetUser(ctx, userID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("error get user: %v", err))
+		return nil, internalerror.ErrAuthInvalid
+	}
+
+	return user, nil
 }
