@@ -79,9 +79,7 @@ func runServer() {
 
 	userRouter := router.PathPrefix("/api/movie").Subrouter()
 	userRouter.Use(mddlw.AuthUser)
-	userRouter.HandleFunc("/{id}/watch-duration", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}).Methods(http.MethodPost)
+	userRouter.HandleFunc("/{id}/watch", movieHandler.CreateMovieView).Methods(http.MethodPost)
 	userRouter.HandleFunc("/{id}/vote", movieHandler.VoteMovie).Methods(http.MethodPost)
 	userRouter.HandleFunc("/vote", movieHandler.GetVotedMovieOfUser).Methods(http.MethodGet)
 
