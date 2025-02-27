@@ -58,9 +58,7 @@ func runServer() {
 	*/
 	router.HandleFunc("/api/backoffice/movie", backofficeHandler.CreateMovie).Methods(http.MethodPost)
 	router.HandleFunc("/api/backoffice/movie/{id}", backofficeHandler.UpdateMovie).Methods(http.MethodPut)
-	router.HandleFunc("/api/backoffice/stat/most-viewed", backofficeHandler.GetMostViewed).Methods(http.MethodGet)
-	router.HandleFunc("/api/backoffice/stat/most-viewed-genre", backofficeHandler.GetMostViewedGenre).Methods(http.MethodGet)
-	router.HandleFunc("/api/backoffice/stat/most-voted", backofficeHandler.GetMostVoted).Methods(http.MethodGet)
+	router.HandleFunc("/api/backoffice/movie/stat", backofficeHandler.GetStats).Methods(http.MethodGet)
 	router.HandleFunc("/api/backoffice/movie", movieHandler.GetMovies).Methods(http.MethodGet)
 
 	/*

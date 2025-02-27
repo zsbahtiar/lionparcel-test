@@ -9,3 +9,20 @@ type Movie struct {
 	Genres      []string `db:"genres"`
 	Link        string   `db:"link"`
 }
+
+type MovieViewCount struct {
+	ID        string `db:"id"`
+	Title     string `db:"title"`
+	ViewCount int    `db:"view_count"`
+}
+
+type GenreViewCount struct {
+	Genre     string `db:"genre"`
+	ViewCount int    `db:"view_count"`
+}
+
+type MovieVotedCount struct {
+	ID         string `db:"id"`
+	Title      string `db:"title"`
+	VotedCount int    `db:"voted_count"`
+}

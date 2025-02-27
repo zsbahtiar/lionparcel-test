@@ -21,6 +21,9 @@ type MovieRepository interface {
 	GetMovies(ctx context.Context, req *request.GetMovies) ([]entity.Movie, int64, error)
 	GetMovie(ctx context.Context, movieID string) (*entity.Movie, error)
 	GetViewMovies(ctx context.Context, movieID string) (int64, error)
+	GetMostViewedMovies(ctx context.Context, limit int) ([]entity.MovieViewCount, error)
+	GetMostViewedGenres(ctx context.Context, limit int) ([]entity.GenreViewCount, error)
+	GetMostVotedMovies(ctx context.Context) ([]entity.MovieVotedCount, error)
 }
 
 func NewMovieRepository(db database.Postgres) MovieRepository {
@@ -144,4 +147,75 @@ WHERE movie_id = $1
 		return 0, err
 	}
 	return totalViews, nil
+}
+
+func (m *movieRepository) GetMostViewedMovies(ctx context.Context, limit int) ([]entity.MovieViewCount, error) {
+	query := `
+    SELECT 
+        m.id,
+        m.title,
+        COUNT(umv.id) AS view_count
+    FROM 
+        movies m
+    JOIN 
+        user_movie_views umv ON m.id = umv.movie_id
+    GROUP BY 
+        m.id, m.title
+    ORDER BY 
+        view_count DESC
+    LIMIT $1
+    `
+	var movies []entity.MovieViewCount
+	err := m.db.Select(ctx, &movies, query, limit)
+	if err != nil {
+		return nil, err
+	}
+	return movies, nil
+}
+
+func (m *movieRepository) GetMostViewedGenres(ctx context.Context, limit int) ([]entity.GenreViewCount, error) {
+	query := `
+    SELECT 
+        genre,
+        COUNT(*) AS view_count
+    FROM 
+        user_movie_views umv
+    JOIN 
+        movies m ON umv.movie_id = m.id,
+        jsonb_array_elements_text(m.genres) AS genre
+    GROUP BY 
+        genre
+    ORDER BY 
+        view_count DESC
+    LIMIT $1
+    `
+	var genres []entity.GenreViewCount
+	err := m.db.Select(ctx, &genres, query, limit)
+	if err != nil {
+		return nil, err
+	}
+	return genres, nil
+}
+
+func (m *movieRepository) GetMostVotedMovies(ctx context.Context) ([]entity.MovieVotedCount, error) {
+	query := `
+	SELECT 
+		m.id,
+		m.title,
+		COUNT(v.id) AS voted_count
+	FROM 
+		movies m
+	JOIN 
+		votes v ON m.id = v.movie_id
+	GROUP BY 
+		m.id, m.title
+	ORDER BY 
+		voted_count DESC
+	`
+	var movies []entity.MovieVotedCount
+	err := m.db.Select(ctx, &movies, query)
+	if err != nil {
+		return nil, err
+	}
+	return movies, nil
 }

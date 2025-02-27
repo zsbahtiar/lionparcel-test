@@ -20,9 +20,7 @@ type backOfficeHandler struct {
 type BackofficeHandler interface {
 	CreateMovie(w http.ResponseWriter, r *http.Request)
 	UpdateMovie(w http.ResponseWriter, r *http.Request)
-	GetMostViewed(w http.ResponseWriter, r *http.Request)
-	GetMostViewedGenre(w http.ResponseWriter, r *http.Request)
-	GetMostVoted(w http.ResponseWriter, r *http.Request)
+	GetStats(w http.ResponseWriter, r *http.Request)
 }
 
 func NewBackofficeHandler(backofficeUsecase module.BackofficeUsecase, validator *validator.Validate) BackofficeHandler {
@@ -81,14 +79,11 @@ func (b *backOfficeHandler) UpdateMovie(w http.ResponseWriter, r *http.Request) 
 	response.WriteSuccess(w, http.StatusOK, resp)
 }
 
-func (b *backOfficeHandler) GetMostViewed(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-func (b *backOfficeHandler) GetMostViewedGenre(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-func (b *backOfficeHandler) GetMostVoted(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
+func (b *backOfficeHandler) GetStats(w http.ResponseWriter, r *http.Request) {
+	resp, err := b.backofficeUsecase.GetStats(r.Context())
+	if err != nil {
+		response.WriteError(w, err)
+		return
+	}
+	response.WriteSuccess(w, http.StatusOK, resp)
 }
