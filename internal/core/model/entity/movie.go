@@ -39,3 +39,10 @@ type UserMovieVote struct {
 	Title   string    `db:"title"`
 	VotedAt time.Time `db:"voted_at"`
 }
+
+type UserMovieView struct {
+	ID              string  `db:"id"`
+	MovieID         string  `db:"movie_id"`
+	UserID          string  `db:"user_id"`
+	DurationWatched float64 `db:"duration_watched"`
+}

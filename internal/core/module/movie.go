@@ -20,6 +20,7 @@ type MovieUsecase interface {
 	GetMovieView(ctx context.Context, movieID string) (*response.GetViewMovies, error)
 	VoteMovie(ctx context.Context, req *request.VoteMovie) error
 	GetVotedMovieOfUser(ctx context.Context, userID string) (*response.GetVotedMovieOfUser, error)
+	CreateUserMovieView(ctx context.Context, view *request.CreateUserMovieView) error
 }
 
 func NewMovieUsecase(movieRepository repository.MovieRepository) MovieUsecase {
@@ -137,4 +138,12 @@ func (m *movieUsecase) GetVotedMovieOfUser(ctx context.Context, userID string) (
 	}
 
 	return getVotedMovieOfUser, nil
+}
+
+func (m *movieUsecase) CreateUserMovieView(ctx context.Context, req *request.CreateUserMovieView) error {
+	return m.movieRepository.CreateUserMovieView(ctx, &entity.UserMovieView{
+		UserID:          req.UserID,
+		MovieID:         req.MovieID,
+		DurationWatched: req.DurationWatched,
+	})
 }

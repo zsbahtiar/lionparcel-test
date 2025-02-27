@@ -23,6 +23,7 @@ type MovieHandler interface {
 	GetMovieView(w http.ResponseWriter, r *http.Request)
 	VoteMovie(w http.ResponseWriter, r *http.Request)
 	GetVotedMovieOfUser(w http.ResponseWriter, r *http.Request)
+	CreateMovieView(w http.ResponseWriter, r *http.Request)
 }
 
 func NewMovieHandler(movieUsecase module.MovieUsecase) MovieHandler {
@@ -121,4 +122,33 @@ func (m *movieHandler) GetVotedMovieOfUser(w http.ResponseWriter, r *http.Reques
 	}
 
 	response.WriteSuccess(w, http.StatusOK, resp)
+}
+
+func (m *movieHandler) CreateMovieView(w http.ResponseWriter, r *http.Request) {
+	userID, err := middleware.GetUserID(r.Context())
+	if err != nil {
+		response.WriteError(w, err)
+		return
+	}
+	vars := mux.Vars(r)
+	req := &request.CreateUserMovieView{
+		UserID:  userID,
+		MovieID: vars["id"],
+	}
+
+	defer r.Body.Close()
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		response.WriteError(w, internalerror.ErrRequestInvalid)
+		return
+	}
+
+	err = m.movieUsecase.CreateUserMovieView(r.Context(), req)
+	if err != nil {
+		response.WriteError(w, err)
+		return
+	}
+
+	response.WriteSuccess(w, http.StatusOK, nil)
+
 }

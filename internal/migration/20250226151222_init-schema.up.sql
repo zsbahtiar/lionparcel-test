@@ -30,7 +30,9 @@ CREATE TABLE IF NOT EXISTS user_movie_views (
   movie_id uuid NOT NULL REFERENCES movies(id),
   -- Can be NULL for anonymous users
   user_id uuid REFERENCES users(id),
-  viewed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  duration_watched numeric(5, 2) NOT NULL, 
+  viewed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, movie_id)
 );
 CREATE INDEX idx_views_movie_id ON user_movie_views(movie_id);
 CREATE TABLE IF NOT EXISTS votes (
@@ -41,13 +43,4 @@ CREATE TABLE IF NOT EXISTS votes (
   UNIQUE(user_id, movie_id)
 );
 CREATE INDEX idx_votes_movie_id ON votes(movie_id);
-CREATE TABLE IF NOT EXISTS user_watch_movie_durations (
-  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), 
-  -- Added 'id' column name
-  movie_id uuid NOT NULL REFERENCES movies(id), 
-  user_id uuid REFERENCES users(id), 
-  -- in seconds
-  duration_watched int NOT NULL, 
-  watched_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
 COMMIT;

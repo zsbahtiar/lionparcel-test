@@ -29,6 +29,7 @@ type MovieRepository interface {
 	CreateVote(ctx context.Context, vote *entity.Vote) error
 	DeleteVote(ctx context.Context, userID, movieID string) error
 	GetVotedMovieOfUser(ctx context.Context, userID string) ([]entity.UserMovieVote, error)
+	CreateUserMovieView(ctx context.Context, view *entity.UserMovieView) error
 }
 
 func NewMovieRepository(db database.Postgres) MovieRepository {
@@ -274,4 +275,12 @@ func (m *movieRepository) GetVotedMovieOfUser(ctx context.Context, userID string
 		return nil, err
 	}
 	return votes, nil
+}
+
+func (m *movieRepository) CreateUserMovieView(ctx context.Context, view *entity.UserMovieView) error {
+	query := `
+	INSERT INTO user_movie_views (movie_id, user_id, duration_watched) VALUES ($1, $2, $3) ON CONFLICT (movie_id, user_id) DO UPDATE SET duration_watched = $3
+	`
+	_, err := m.db.Exec(ctx, query, view.MovieID, view.UserID, view.DurationWatched)
+	return err
 }
