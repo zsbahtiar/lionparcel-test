@@ -2,10 +2,11 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/entity"
+	"github.com/zsbahtiar/lionparcel-test/internal/core/model/internalerror"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
 	"github.com/zsbahtiar/lionparcel-test/internal/pkg/database"
 )
@@ -17,7 +18,6 @@ type movieRepository struct {
 type MovieRepository interface {
 	CreateMovie(ctx context.Context, movie *entity.Movie) error
 	UpdateMovie(ctx context.Context, movie *entity.Movie) error
-	// @Todo: add more request and response
 	GetMovies(ctx context.Context, req *request.GetMovies) ([]entity.Movie, int64, error)
 	GetMovie(ctx context.Context, movieID string) (*entity.Movie, error)
 	GetViewMovies(ctx context.Context, movieID string) (int64, error)
@@ -34,7 +34,6 @@ func (m *movieRepository) CreateMovie(ctx context.Context, movie *entity.Movie) 
 	INSERT INTO movies (id, title, description, duration, link, genres, artists) VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 	_, err := m.db.Exec(ctx, query, movie.ID, movie.Title, movie.Description, movie.Duration, movie.Link, movie.Genres, movie.Artists)
-	// @Todo handling custom error
 	return err
 }
 
@@ -46,13 +45,12 @@ func (m *movieRepository) UpdateMovie(ctx context.Context, movie *entity.Movie) 
 	`
 
 	res, err := m.db.Exec(ctx, query, movie.Title, movie.Description, movie.Duration, movie.Link, movie.Genres, movie.Artists, movie.ID)
-	// @Todo handling custom error
 	if err != nil {
 		return err
 	}
 
 	if res.RowsAffected() < 1 {
-		return fmt.Errorf("movie with id %s not found", movie.ID)
+		return internalerror.ErrMovieNotFound
 	}
 	return nil
 }
@@ -104,7 +102,6 @@ FROM movies
 	var moviesWithCount []movieWithCount
 	err := m.db.Select(ctx, &moviesWithCount, m.db.Rebind(query), values...)
 	if err != nil {
-		// @Todo handling custom error
 		return nil, 0, err
 	}
 	movies = make([]entity.Movie, len(moviesWithCount))
@@ -124,7 +121,9 @@ WHERE id = $1
 	var movie entity.Movie
 	err := m.db.SelectOne(ctx, &movie, query, movieID)
 	if err != nil {
-		// @Todo handling custom error
+		if err == pgx.ErrNoRows {
+			return nil, internalerror.ErrMovieNotFound
+		}
 		return nil, err
 	}
 	return &movie, nil
@@ -139,7 +138,9 @@ WHERE movie_id = $1
 	var totalViews int64
 	err := m.db.SelectOne(ctx, &totalViews, query, movieID)
 	if err != nil {
-		// @Todo handling custom error
+		if err == pgx.ErrNoRows {
+			return 0, internalerror.ErrMovieNotFound
+		}
 		return 0, err
 	}
 	return totalViews, nil

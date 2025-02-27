@@ -2,7 +2,10 @@ package response
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/logger"
 )
 
 type Response struct {
@@ -60,6 +63,7 @@ func WriteError(w http.ResponseWriter, err error) {
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
+	logger.Error(fmt.Sprintf("unknown error: %v", err))
 
 	w.WriteHeader(http.StatusInternalServerError)
 	resp := Response{

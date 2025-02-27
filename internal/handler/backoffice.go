@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
+	"github.com/zsbahtiar/lionparcel-test/internal/core/model/internalerror"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
 	"github.com/zsbahtiar/lionparcel-test/internal/pkg/response"
@@ -12,6 +14,7 @@ import (
 
 type backOfficeHandler struct {
 	backofficeUsecase module.BackofficeUsecase
+	validator         *validator.Validate
 }
 
 type BackofficeHandler interface {
@@ -22,9 +25,10 @@ type BackofficeHandler interface {
 	GetMostVoted(w http.ResponseWriter, r *http.Request)
 }
 
-func NewBackofficeHandler(backofficeUsecase module.BackofficeUsecase) BackofficeHandler {
+func NewBackofficeHandler(backofficeUsecase module.BackofficeUsecase, validator *validator.Validate) BackofficeHandler {
 	return &backOfficeHandler{
 		backofficeUsecase: backofficeUsecase,
+		validator:         validator,
 	}
 }
 
@@ -34,7 +38,12 @@ func (b *backOfficeHandler) CreateMovie(w http.ResponseWriter, r *http.Request) 
 	defer r.Body.Close()
 
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		response.WriteError(w, err)
+		response.WriteError(w, internalerror.ErrRequestInvalid)
+		return
+	}
+
+	if err := b.validator.Struct(req); err != nil {
+		response.WriteError(w, response.New(http.StatusBadRequest, "REQUEST_INVALID", err.Error()))
 		return
 	}
 
@@ -56,10 +65,14 @@ func (b *backOfficeHandler) UpdateMovie(w http.ResponseWriter, r *http.Request) 
 	defer r.Body.Close()
 
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-		response.WriteError(w, err)
+		response.WriteError(w, internalerror.ErrRequestInvalid)
 		return
 	}
 
+	if err := b.validator.Struct(req); err != nil {
+		response.WriteError(w, response.New(http.StatusBadRequest, "REQUEST_INVALID", err.Error()))
+		return
+	}
 	resp, err := b.backofficeUsecase.UpdateMovice(r.Context(), req)
 	if err != nil {
 		response.WriteError(w, err)

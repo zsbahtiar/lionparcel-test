@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/module"
@@ -47,8 +48,9 @@ func runServer() {
 	authUsecae := module.NewAuthUsecase(userRepository, cfg.JWTSecret)
 	movieUsecase := module.NewMovieUsecase(movieRepository)
 
-	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae)
-	authHandler := handler.NewAuthHandler(authUsecae)
+	validation := validator.New()
+	backofficeHandler := handler.NewBackofficeHandler(backofficeUsecae, validation)
+	authHandler := handler.NewAuthHandler(authUsecae, validation)
 	movieHandler := handler.NewMovieHandler(movieUsecase)
 
 	/*

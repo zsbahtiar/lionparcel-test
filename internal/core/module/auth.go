@@ -2,7 +2,7 @@ package module
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -10,9 +10,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/entity"
+	"github.com/zsbahtiar/lionparcel-test/internal/core/model/internalerror"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/request"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/model/response"
 	"github.com/zsbahtiar/lionparcel-test/internal/core/repository"
+	"github.com/zsbahtiar/lionparcel-test/internal/pkg/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -49,11 +51,6 @@ const (
 	AccessTokenExpiration = 1 * time.Hour
 )
 
-var (
-	ErrInvalidToken = errors.New("invalid token")
-	ErrExpiredToken = errors.New("token has expired")
-)
-
 func (a *authUsecase) RegisterUser(ctx context.Context, req *request.Register) error {
 	paswordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -77,7 +74,8 @@ func (a *authUsecase) Login(ctx context.Context, req *request.Login) (*response.
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password))
 	if err != nil {
-		return nil, err
+		logger.Error(fmt.Sprintf("error compare password: %v", err))
+		return nil, internalerror.ErrAuthInvalid
 	}
 
 	now := time.Now()
@@ -92,7 +90,8 @@ func (a *authUsecase) Login(ctx context.Context, req *request.Login) (*response.
 	tokenClaim := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := tokenClaim.SignedString([]byte(a.jwtSecret))
 	if err != nil {
-		return nil, err
+		logger.Error(fmt.Sprintf("error sign token: %v", err))
+		return nil, internalerror.ErrAuthInvalid
 	}
 
 	return &response.Login{
@@ -110,17 +109,18 @@ func (a *authUsecase) Logout(ctx context.Context, req *request.Logout) error {
 		return []byte(a.jwtSecret), nil
 	})
 	if err != nil {
-		return err
+		logger.Error(fmt.Sprintf("error parse token: %v", err))
+		return internalerror.ErrAuthInvalid
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return ErrInvalidToken
+		return internalerror.ErrAuthInvalid
 	}
 
 	exp, ok := claims["exp"].(float64)
 	if !ok {
-		return ErrInvalidToken
+		return internalerror.ErrAuthInvalid
 	}
 
 	expiresAt := time.Unix(int64(exp), 0)
