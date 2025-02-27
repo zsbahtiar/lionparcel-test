@@ -83,6 +83,7 @@ func runServer() {
 		w.WriteHeader(http.StatusNotImplemented)
 	}).Methods(http.MethodPost)
 	userRouter.HandleFunc("/{id}/vote", movieHandler.VoteMovie).Methods(http.MethodPost)
+	userRouter.HandleFunc("/vote", movieHandler.GetVotedMovieOfUser).Methods(http.MethodGet)
 
 	router.Use(mddlw.Do)
 	srv := &http.Server{

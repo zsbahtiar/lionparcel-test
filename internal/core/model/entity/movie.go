@@ -1,5 +1,7 @@
 package entity
 
+import "time"
+
 type Movie struct {
 	ID          string   `db:"id"`
 	Title       string   `db:"title"`
@@ -30,4 +32,10 @@ type MovieVotedCount struct {
 type Vote struct {
 	UserID  string `db:"user_id"`
 	MovieID string `db:"movie_id"`
+}
+
+type UserMovieVote struct {
+	ID      string    `db:"id"`
+	Title   string    `db:"title"`
+	VotedAt time.Time `db:"voted_at"`
 }

@@ -28,6 +28,7 @@ type MovieRepository interface {
 	GetMostVotedMovies(ctx context.Context) ([]entity.MovieVotedCount, error)
 	CreateVote(ctx context.Context, vote *entity.Vote) error
 	DeleteVote(ctx context.Context, userID, movieID string) error
+	GetVotedMovieOfUser(ctx context.Context, userID string) ([]entity.UserMovieVote, error)
 }
 
 func NewMovieRepository(db database.Postgres) MovieRepository {
@@ -251,4 +252,26 @@ func (m *movieRepository) DeleteVote(ctx context.Context, userID, movieID string
 		return err
 	}
 	return nil
+}
+
+func (m *movieRepository) GetVotedMovieOfUser(ctx context.Context, userID string) ([]entity.UserMovieVote, error) {
+	query := `
+	SELECT 
+		m.id,
+		m.title,
+		v.created_at AS voted_at
+	FROM 
+		movies m
+	JOIN 
+		votes v ON m.id = v.movie_id
+	WHERE 
+		v.user_id = $1
+	ORDER BY v.created_at DESC
+	`
+	var votes []entity.UserMovieVote
+	err := m.db.Select(ctx, &votes, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	return votes, nil
 }
